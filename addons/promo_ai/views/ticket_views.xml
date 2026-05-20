@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_promo_ai_ticket_list" model="ir.ui.view">
+        <field name="name">promo_ai.ticket.list</field>
+        <field name="model">promo_ai.ticket</field>
+        <field name="arch" type="xml">
+            <list string="Tickets"
+                  decoration-info="state == 'new'"
+                  decoration-warning="state == 'in_progress'"
+                  decoration-success="state == 'resolved'"
+                  decoration-muted="state == 'closed'">
+                <field name="titre"/>
+                <field name="sale_id"/>
+                <field name="customer_id"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'new'"
+                       decoration-warning="state == 'in_progress'"
+                       decoration-success="state == 'resolved'"
+                       decoration-muted="state == 'closed'"/>
+                <field name="priority" widget="priority"/>
+                <field name="create_date" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_promo_ai_ticket_form" model="ir.ui.view">
+        <field name="name">promo_ai.ticket.form</field>
+        <field name="model">promo_ai.ticket</field>
+        <field name="arch" type="xml">
+            <form string="Ticket">
+                <header>
+                    <button name="action_in_progress" string="In Progress"
+                            type="object" class="btn-warning"
+                            invisible="state != 'new'"/>
+                    <button name="action_resolve" string="Resolve"
+                            type="object" class="btn-success"
+                            invisible="state not in ('new','in_progress')"/>
+                    <button name="action_close" string="Close"
+                            type="object"
+                            invisible="state == 'closed'"/>
+                    <button name="action_reset" string="Reset to New"
+                            type="object"
+                            invisible="state == 'new'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="new,in_progress,resolved,closed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Ticket Information">
+                            <field name="titre"/>
+                            <field name="sale_id"/>
+                            <field name="customer_id" readonly="1"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                        <group string="Description">
+                            <field name="description" widget="text" nolabel="1"
+                                   placeholder="Describe the issue..."/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_promo_ai_ticket_search" model="ir.ui.view">
+        <field name="name">promo_ai.ticket.search</field>
+        <field name="model">promo_ai.ticket</field>
+        <field name="arch" type="xml">
+            <search string="Search Tickets">
+                <field name="titre"/>
+                <field name="sale_id"/>
+                <field name="customer_id"/>
+                <filter string="New" name="filter_new" domain="[('state','=','new')]"/>
+                <filter string="In Progress" name="filter_progress"
+                        domain="[('state','=','in_progress')]"/>
+                <filter string="Resolved" name="filter_resolved"
+                        domain="[('state','=','resolved')]"/>
+                <filter string="Closed" name="filter_closed" domain="[('state','=','closed')]"/>
+                <separator/>
+                <filter string="High Priority" name="filter_priority"
+                        domain="[('priority','in',['2','3'])]"/>
+                <group>
+                    <filter string="Sale" name="group_sale" context="{'group_by': 'sale_id'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Customer" name="group_customer"
+                            context="{'group_by': 'customer_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_promo_ai_ticket" model="ir.actions.act_window">
+        <field name="name">Tickets</field>
+        <field name="res_model">promo_ai.ticket</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_promo_ai_ticket_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No tickets yet!</p>
+            <p>Tickets are linked to sales and track customer issues.</p>
+        </field>
+    </record>
+
+</odoo>

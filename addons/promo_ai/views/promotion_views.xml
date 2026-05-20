@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_promo_ai_promotion_list" model="ir.ui.view">
+        <field name="name">promo_ai.promotion.list</field>
+        <field name="model">promo_ai.promotion</field>
+        <field name="arch" type="xml">
+            <list string="Promotions"
+                  decoration-success="state == 'active'"
+                  decoration-warning="state == 'scheduled'"
+                  decoration-danger="state == 'expired'"
+                  decoration-muted="state == 'disabled'">
+                <field name="name"/>
+                <field name="code" optional="show"/>
+                <field name="target_type"/>
+                <field name="material_id" optional="show"/>
+                <field name="discount_label"/>
+                <field name="priority"/>
+                <field name="starts_at" optional="hide"/>
+                <field name="ends_at" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'scheduled'"
+                       decoration-danger="state == 'expired'"
+                       decoration-muted="state == 'disabled'"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_promo_ai_promotion_form" model="ir.ui.view">
+        <field name="name">promo_ai.promotion.form</field>
+        <field name="model">promo_ai.promotion</field>
+        <field name="arch" type="xml">
+            <form string="Promotion">
+                <sheet>
+                    <widget name="web_ribbon" title="Disabled" bg_color="text-bg-secondary"
+                            invisible="active"/>
+                    <group>
+                        <group string="Promotion Details">
+                            <field name="name"/>
+                            <field name="code"
+                                   invisible="target_type != 'coupon'"
+                                   required="target_type == 'coupon'"/>
+                            <field name="target_type"/>
+                            <field name="material_id"
+                                   invisible="target_type != 'material'"
+                                   required="target_type == 'material'"/>
+                            <field name="priority"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Discount">
+                            <field name="promo_type"/>
+                            <field name="value"
+                                   string="Discount Value"
+                                   help="Percentage (e.g. 15 = -15%) or fixed amount (e.g. 10 = -10€)"/>
+                            <field name="discount_label" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Validity Period">
+                        <group>
+                            <field name="starts_at"/>
+                            <field name="ends_at"/>
+                        </group>
+                        <group>
+                            <field name="state" readonly="1" widget="badge"
+                                   decoration-success="state == 'active'"
+                                   decoration-warning="state == 'scheduled'"
+                                   decoration-danger="state == 'expired'"
+                                   decoration-muted="state == 'disabled'"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_promo_ai_promotion_search" model="ir.ui.view">
+        <field name="name">promo_ai.promotion.search</field>
+        <field name="model">promo_ai.promotion</field>
+        <field name="arch" type="xml">
+            <search string="Search Promotions">
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Active" name="filter_active"
+                        domain="[('state','=','active')]"/>
+                <filter string="Scheduled" name="filter_scheduled"
+                        domain="[('state','=','scheduled')]"/>
+                <filter string="Expired" name="filter_expired"
+                        domain="[('state','=','expired')]"/>
+                <filter string="Disabled" name="filter_disabled"
+                        domain="[('state','=','disabled')]"/>
+                <separator/>
+                <filter string="Coupon" name="filter_coupon"
+                        domain="[('target_type','=','coupon')]"/>
+                <filter string="Global" name="filter_global"
+                        domain="[('target_type','=','all')]"/>
+                <filter string="Material-Specific" name="filter_material"
+                        domain="[('target_type','=','material')]"/>
+                <group>
+                    <filter string="Target Type" name="group_target"
+                            context="{'group_by': 'target_type'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_promo_ai_promotion" model="ir.actions.act_window">
+        <field name="name">Promotions</field>
+        <field name="res_model">promo_ai.promotion</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_promo_ai_promotion_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create your first promotion!</p>
+            <p>Promotions can apply to specific materials, all materials, or be coupon-based.</p>
+        </field>
+    </record>
+
+</odoo>

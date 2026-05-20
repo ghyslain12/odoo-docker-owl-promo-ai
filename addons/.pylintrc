@@ -1,0 +1,40 @@
+[MASTER]
+load-plugins=pylint_odoo
+
+[FORMAT]
+# On garde 120 ou 128 selon ta préférence pour éviter les alertes de longueur de ligne
+max-line-length=128
+
+[MESSAGES CONTROL]
+# On désactive tout ce qui est "cosmétique" ou trop strict (OCA)
+disable=
+    #--- Cosmétique & Style ---
+    C0103,  # variable naming (snake_case)
+    C0114,  # module docstring
+    C0115,  # class docstring
+    C0116,  # function docstring
+    C0301,  # line-too-long
+    C0411,  # wrong-import-order
+
+    #--- Alertes OCA spécifiques (souvent trop strictes pour du privé) ---
+    C8101,  # manifest-required-author (demande l'OCA en auteur)
+    C8103,  # manifest-deprecated-key (clés comme 'description' dans le manifest)
+    C8116,  # manifest-superfluous-key (clés par défaut comme 'installable')
+    W8113,  # attribute-string-redundant (le label égal au nom du champ)
+    W8161,  # prefer-env-translation (préfère self.env._ au lieu de _)
+
+    #--- Structure & Design ---
+    R0801,  # code redondant
+    R0903,  # too-few-public-methods
+    R0913,  # too-many-arguments
+    W0212,  # protected-access (accès aux membres avec _)
+    W0223,  # abstract-method (méthodes abstract d'Odoo non redéfinies)
+
+    #--- Divers ---
+    W0611,  # unused-import
+    W0613,  # unused-argument
+
+
+# Commande:
+# docker exec -u 0 -it odoo_app pip3 install pylint pylint-odoo --break-system-packages
+# docker exec -it odoo_app pylint /mnt/extra-addons

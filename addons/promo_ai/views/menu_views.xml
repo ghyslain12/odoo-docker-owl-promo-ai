@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menu Racine (Priorité sequence="1") -->
+    <menuitem id="menu_promo_ai_root"
+              name="Promo AI"
+              sequence="1"
+              web_icon="promo_ai,static/description/icon.png"/>
+
+    <!-- Home (Pointe vers l'action_client corrigée au dessus) -->
+    <menuitem id="menu_promo_ai_dashboard"
+              name="Home"
+              parent="menu_promo_ai_root"
+              action="action_promo_ai_dashboard"
+              sequence="10"/>
+
+    <!-- Provisioning -->
+    <menuitem id="menu_group_provisioning" name="Provisioning" parent="menu_promo_ai_root" sequence="20"/>
+    <menuitem id="menu_promo_ai_sale" name="Sale" parent="menu_group_provisioning" action="action_promo_ai_sale" sequence="10"/>
+
+    <!-- Ticketing -->
+    <menuitem id="menu_group_ticketing" name="Ticketing" parent="menu_promo_ai_root" sequence="30"/>
+    <menuitem id="menu_promo_ai_ticket" name="Ticket" parent="menu_group_ticketing" action="action_promo_ai_ticket" sequence="10"/>
+
+    <!-- Users -->
+    <menuitem id="menu_group_users" name="Users" parent="menu_promo_ai_root" sequence="40"/>
+    <menuitem id="menu_promo_ai_user_link" name="User" parent="menu_group_users" action="base.action_res_users" sequence="10"/>
+    <menuitem id="menu_promo_ai_customer" name="Client" parent="menu_group_users" action="action_promo_ai_customer" sequence="20"/>
+
+    <!-- Materials -->
+    <menuitem id="menu_group_materials" name="Materials" parent="menu_promo_ai_root" sequence="50"/>
+    <menuitem id="menu_promo_ai_material" name="Material" parent="menu_group_materials" action="action_promo_ai_material" sequence="10"/>
+
+    <!-- Promotions -->
+    <menuitem id="menu_promo_ai_promotion"
+              name="Promotions"
+              parent="menu_promo_ai_root"
+              action="action_promo_ai_promotion"
+              sequence="60"/>
+
+</odoo>

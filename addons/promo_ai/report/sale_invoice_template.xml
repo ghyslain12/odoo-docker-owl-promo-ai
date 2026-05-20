@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="report_sale_invoice_template">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="web.external_layout">
+                <div class="page">
+
+                    <!-- Header -->
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <h2>
+                                <t t-if="doc.invoice_country == 'france'">FACTURE</t>
+                                <t t-else="">INVOICE</t>
+                            </h2>
+                            <p class="text-muted">
+                                <strong>
+                                    <t t-if="doc.invoice_country == 'france'">N° Facture :</t>
+                                    <t t-else="">Invoice No.:</t>
+                                </strong>
+                                <span t-field="doc.name"/>
+                            </p>
+                            <p class="text-muted">
+                                <strong>
+                                    <t t-if="doc.invoice_country == 'france'">Date :</t>
+                                    <t t-else="">Date:</t>
+                                </strong>
+                                <span t-field="doc.create_date" t-options="{'widget': 'date'}"/>
+                            </p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <t t-if="doc.invoice_country == 'france'">
+                                <p><strong>Vente :</strong> <span t-field="doc.titre"/></p>
+                                <p><strong>Description :</strong> <span t-field="doc.description"/></p>
+                                <p><strong>Client :</strong> <span t-field="doc.customer_id.surnom"/></p>
+                            </t>
+                            <t t-else="">
+                                <p><strong>Sale:</strong> <span t-field="doc.titre"/></p>
+                                <p><strong>Description:</strong> <span t-field="doc.description"/></p>
+                                <p><strong>Customer:</strong> <span t-field="doc.customer_id.surnom"/></p>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Materials table -->
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-dark">
+                            <tr>
+                                <t t-if="doc.invoice_country == 'france'">
+                                    <th>Désignation</th>
+                                    <th class="text-end">Prix initial</th>
+                                    <th class="text-end">Prix final</th>
+                                    <th class="text-end">Remise</th>
+                                </t>
+                                <t t-else="">
+                                    <th>Designation</th>
+                                    <th class="text-end">Original Price</th>
+                                    <th class="text-end">Final Price</th>
+                                    <th class="text-end">Discount</th>
+                                </t>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.line_ids" t-as="line">
+                                <tr>
+                                    <td><span t-field="line.material_id.designation"/></td>
+                                    <td class="text-end">
+                                        <t t-if="line.discount_amount > 0">
+                                            <del class="text-muted">
+                                                <span t-field="line.original_price"
+                                                      t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                            </del>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="line.original_price"
+                                                  t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                        </t>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-field="line.final_price"
+                                              t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-if="line.discount_percentage > 0">
+                                            <span class="text-success">
+                                                <t t-esc="'-' + '%.2f' % line.discount_percentage + '%'"/>
+                                                (<span t-field="line.discount_amount"
+                                                       t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>)
+                                            </span>
+                                        </t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-secondary">
+                                <td colspan="2" class="text-end">
+                                    <strong>
+                                        <t t-if="doc.invoice_country == 'france'">Remise totale :</t>
+                                        <t t-else="">Total Discount:</t>
+                                    </strong>
+                                </td>
+                                <td class="text-end" colspan="2">
+                                    <span class="text-success" t-if="doc.total_discount > 0">
+                                        <span t-field="doc.total_discount"
+                                              t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                    </span>
+                                    <t t-else="">—</t>
+                                </td>
+                            </tr>
+                            <tr class="table-dark">
+                                <td colspan="2" class="text-end">
+                                    <strong>
+                                        <t t-if="doc.invoice_country == 'france'">TOTAL TTC :</t>
+                                        <t t-else="">TOTAL:</t>
+                                    </strong>
+                                </td>
+                                <td colspan="2" class="text-end">
+                                    <strong>
+                                        <span t-field="doc.total_amount"
+                                              t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Tickets section -->
+                    <t t-if="doc.ticket_ids">
+                        <div class="mt-4">
+                            <h4>
+                                <t t-if="doc.invoice_country == 'france'">Tickets associés</t>
+                                <t t-else="">Associated Tickets</t>
+                            </h4>
+                            <t t-foreach="doc.ticket_ids" t-as="ticket">
+                                <div class="border rounded p-2 mb-2">
+                                    <strong><span t-field="ticket.titre"/></strong>
+                                    <p class="text-muted mb-0">
+                                        <span t-field="ticket.description"/>
+                                    </p>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+
+                    <!-- France-specific legal mentions -->
+                    <t t-if="doc.invoice_country == 'france'">
+                        <div class="mt-5 text-muted" style="font-size: 9px;">
+                            <hr/>
+                            <p>
+                                Conformément à l'article L441-6 du Code de commerce, tout retard
+                                de paiement entraîne des pénalités de retard exigibles sans rappel.
+                                En cas de retard de paiement, une indemnité forfaitaire pour frais
+                                de recouvrement de 40 € sera due.
+                            </p>
+                            <p>TVA non applicable, article 293 B du CGI.</p>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="mt-5 text-muted" style="font-size: 9px;">
+                            <hr/>
+                            <p>Payment due within 30 days of invoice date.</p>
+                        </div>
+                    </t>
+
+                </div>
+            </t>
+        </t>
+    </t>
+</template>
+
+</odoo>

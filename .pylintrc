@@ -1,0 +1,26 @@
+[MASTER]
+load-plugins=pylint_odoo
+
+[ODOOLINT]
+readme_template_url=https://github.com/OCA/maintainer-tools/blob/master/template/module/README.rst
+
+[FORMAT]
+max-line-length=120
+
+[MESSAGES CONTROL]
+disable=
+    C0103,  # variable naming
+    C0114,  # module docstring
+    C0115,  # class docstring
+    C0116,  # function docstring
+    R0903,  # too-few-public-methods
+    R0913,  # too-many-arguments
+    W0212,  # protected-access
+    W0611,  # unused-import
+
+# Commande:
+# docker exec -u 0 -it odoo_app pip3 install pylint pylint-odoo --break-system-packages
+# docker exec -it odoo_app pylint /mnt/extra-addons
+
+# Copy .pylintrc in ./addons
+# docker exec -it odoo_app pylint --rcfile=/mnt/extra-addons/.pylintrc /mnt/extra-addons/promo_ai

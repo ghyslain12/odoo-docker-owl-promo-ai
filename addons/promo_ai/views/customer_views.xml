@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_promo_ai_customer_list" model="ir.ui.view">
+        <field name="name">promo_ai.customer.list</field>
+        <field name="model">promo_ai.customer</field>
+        <field name="arch" type="xml">
+            <list string="Customers">
+                <field name="surnom"/>
+                <field name="user_id"/>
+                <field name="sale_count" string="Sales" widget="badge"/>
+                <field name="total_revenue" widget="monetary"
+                       options="{'currency_field': 'currency_id'}" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_promo_ai_customer_form" model="ir.ui.view">
+        <field name="name">promo_ai.customer.form</field>
+        <field name="model">promo_ai.customer</field>
+        <field name="arch" type="xml">
+            <form string="Customer">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_sales"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-shopping-cart">
+                            <field name="sale_count" widget="statinfo" string="Sales"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="Customer Information">
+                            <field name="surnom"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group string="Statistics">
+                            <field name="total_revenue" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Sales" name="sales">
+                            <field name="sale_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="titre"/>
+                                    <field name="total_amount" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="ticket_count" string="Tickets" widget="badge"/>
+                                    <field name="create_date"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_promo_ai_customer_search" model="ir.ui.view">
+        <field name="name">promo_ai.customer.search</field>
+        <field name="model">promo_ai.customer</field>
+        <field name="arch" type="xml">
+            <search string="Search Customers">
+                <field name="surnom"/>
+                <field name="user_id"/>
+                <group>
+                    <filter string="User" name="group_user" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_promo_ai_customer" model="ir.actions.act_window">
+        <field name="name">Customers</field>
+        <field name="res_model">promo_ai.customer</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_promo_ai_customer_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create your first customer!</p>
+        </field>
+    </record>
+
+</odoo>

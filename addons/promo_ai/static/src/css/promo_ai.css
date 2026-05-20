@@ -1,0 +1,117 @@
+:root {
+    --promo-navbar-bg:    #333333;
+    --promo-text-light:   #cccccc;
+    --promo-text-white:   #ffffff;
+    --promo-accent:       #4a5eb8;
+    --promo-accent-hover: #3a4ea8;
+    --promo-content-bg:   #f5f5f5;
+    --promo-card-bg:      #ffffff;
+    --sidebar-width:      240px;
+}
+
+.promo-sidebar {
+    width: var(--sidebar-width) !important;
+    background: #3a3a3a !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100vh - 46px) !important;
+    position: fixed !important;
+    top: 46px !important;
+    left: 0 !important;
+    z-index: 1000 !important;
+}
+
+.o_action_manager, .o_control_panel {
+    margin-left: var(--sidebar-width) !important;
+    width: calc(100% - var(--sidebar-width)) !important;
+}
+
+/* FIX SIGNUP & LOGIN - Supprime le décalage */
+body:has(.o_signup_form) .o_action_manager,
+body:has(.o_signup_form) .o_control_panel,
+body.o_login_page .o_action_manager,
+body.o_login_page .o_control_panel {
+    margin-left: 0 !important;
+    width: 100% !important;
+}
+
+.promo-main-content {
+    display: flex !important;
+    flex-direction: column !important;
+    background: var(--promo-content-bg) !important;
+    min-height: 100% !important;
+}
+
+.promo-header {
+    background: #fff !important;
+    padding: 15px 40px !important;
+    border-bottom: 1px solid #eee !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center;
+}
+
+.group-title {
+    padding: 12px 20px 4px 20px !important;
+    color: var(--promo-text-white) !important;
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+}
+
+.sub-link {
+    padding: 6px 20px 6px 40px !important;
+    color: #999 !important;
+    font-size: 0.8rem !important;
+    text-decoration: none !important;
+    display: block !important;
+}
+
+.sub-link:hover {
+    color: #fff !important;
+    background: rgba(255,255,255,0.05) !important;
+}
+
+.sidebar-links a:not(.sub-link) {
+    padding: 12px 20px !important;
+    color: var(--promo-text-light) !important;
+    text-decoration: none !important;
+    display: block !important;
+}
+
+.sidebar-links a.active {
+    background: rgba(255,255,255,0.05) !important;
+    color: #fff !important;
+    border-left: 4px solid var(--promo-accent) !important;
+}
+
+.promo-card-kpi {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex !important;
+    align-items: center !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.o_main_navbar { background-color: var(--promo-navbar-bg) !important; }
+.o_main_navbar .o_menu_sections { display: none !important; }
+.o_menu_brand { color: var(--promo-text-white) !important; font-weight: 700 !important; }
+
+.o_action_manager:has(.o_promo_dashboard_wrapper) .o_control_panel {
+    display: none !important;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #bbb; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--promo-accent); }

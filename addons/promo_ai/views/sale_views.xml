@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── Sale Line inline list ─── -->
+    <record id="view_promo_ai_sale_line_list_inline" model="ir.ui.view">
+        <field name="name">promo_ai.sale.line.list.inline</field>
+        <field name="model">promo_ai.sale.line</field>
+        <field name="arch" type="xml">
+            <list string="Materials" editable="bottom">
+                <field name="material_id" options="{'no_create': False}"/>
+                <field name="original_price" widget="monetary"
+                       options="{'currency_field': 'currency_id'}" readonly="1"/>
+                <field name="promotion_id" optional="show" readonly="1"/>
+                <field name="discount_percentage" readonly="1"
+                       decoration-success="discount_percentage > 0"/>
+                <field name="discount_amount" widget="monetary"
+                       options="{'currency_field': 'currency_id'}" readonly="1"
+                       decoration-success="discount_amount > 0"/>
+                <field name="final_price" widget="monetary"
+                       options="{'currency_field': 'currency_id'}" readonly="1"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ─── Sale list ─── -->
+    <record id="view_promo_ai_sale_list" model="ir.ui.view">
+        <field name="name">promo_ai.sale.list</field>
+        <field name="model">promo_ai.sale</field>
+        <field name="arch" type="xml">
+            <list string="Sales" decoration-info="invoice_generated == True">
+                <field name="name"/>
+                <field name="titre"/>
+                <field name="customer_id"/>
+                <field name="total_amount" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="total_discount" widget="monetary"
+                       options="{'currency_field': 'currency_id'}" optional="show"
+                       decoration-success="total_discount > 0"/>
+                <field name="ticket_count" string="Tickets" widget="badge"/>
+                <field name="invoice_generated" widget="boolean_toggle" optional="show"/>
+                <field name="create_date" optional="hide"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ─── Sale form ─── -->
+    <record id="view_promo_ai_sale_form" model="ir.ui.view">
+        <field name="name">promo_ai.sale.form</field>
+        <field name="model">promo_ai.sale</field>
+        <field name="arch" type="xml">
+            <form string="Sale">
+                <header>
+                    <button name="action_open_invoice_wizard"
+                            string="Generate Invoice"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-file-pdf-o"/>
+                    <button name="action_apply_coupon"
+                            string="Apply Coupon"
+                            type="object"
+                            icon="fa-tag"
+                            invisible="not coupon_code"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_tickets"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-ticket">
+                            <field name="ticket_count" widget="statinfo" string="Tickets"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <label for="titre"/>
+                        <h2><field name="titre" placeholder="Sale title..."/></h2>
+                    </div>
+                    <group>
+                        <group string="Sale Information">
+                            <field name="customer_id"/>
+                            <field name="description" widget="text"
+                                   placeholder="Describe this sale..."/>
+                        </group>
+                        <group string="Coupon &amp; Invoice">
+                            <field name="coupon_code"
+                                   placeholder="Enter coupon code..."/>
+                            <field name="invoice_country"/>
+                            <field name="invoice_generated" readonly="1"
+                                   decoration-success="invoice_generated == True"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Materials" name="materials">
+                            <field name="line_ids" widget="one2many"
+                                   context="{'default_sale_id': id}">
+                                <list string="Materials" editable="bottom">
+                                    <field name="material_id"
+                                           options="{'no_create': False}"/>
+                                    <field name="original_price" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"
+                                           readonly="1"/>
+                                    <field name="promotion_id" optional="show" readonly="1"/>
+                                    <field name="discount_percentage" readonly="1"
+                                           decoration-success="discount_percentage > 0"/>
+                                    <field name="discount_amount" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"
+                                           readonly="1"
+                                           decoration-success="discount_amount > 0"/>
+                                    <field name="final_price" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"
+                                           readonly="1"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="total_discount" widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"
+                                       class="oe_subtotal_footer_separator"
+                                       decoration-success="total_discount > 0"/>
+                                <field name="total_amount" widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"
+                                       class="oe_subtotal_footer_separator o_total_amount"/>
+                            </group>
+                        </page>
+
+                        <page string="Tickets" name="tickets">
+                            <field name="ticket_ids" context="{'default_sale_id': id}">
+                                <list editable="bottom">
+                                    <field name="titre"/>
+                                    <field name="state" widget="badge"
+                                           decoration-info="state == 'new'"
+                                           decoration-warning="state == 'in_progress'"
+                                           decoration-success="state == 'resolved'"
+                                           decoration-muted="state == 'closed'"/>
+                                    <field name="priority" widget="priority"/>
+                                    <field name="description" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="History" name="history">
+                            <div class="o_Message_list">
+                                <field name="message_ids" widget="mail_thread"/>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ─── Search ─── -->
+    <record id="view_promo_ai_sale_search" model="ir.ui.view">
+        <field name="name">promo_ai.sale.search</field>
+        <field name="model">promo_ai.sale</field>
+        <field name="arch" type="xml">
+            <search string="Search Sales">
+                <field name="name"/>
+                <field name="titre"/>
+                <field name="customer_id"/>
+                <filter string="Has Invoice" name="has_invoice"
+                        domain="[('invoice_generated','=',True)]"/>
+                <filter string="No Invoice" name="no_invoice"
+                        domain="[('invoice_generated','=',False)]"/>
+                <group>
+                    <filter string="Customer" name="group_customer"
+                            context="{'group_by': 'customer_id'}"/>
+                    <filter string="Month" name="group_month"
+                            context="{'group_by': 'create_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ─── Action ─── -->
+    <record id="action_promo_ai_sale" model="ir.actions.act_window">
+        <field name="name">Sales</field>
+        <field name="res_model">promo_ai.sale</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_promo_ai_sale_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create your first sale!</p>
+            <p>Link customers, materials and apply promotions automatically.</p>
+        </field>
+    </record>
+
+</odoo>

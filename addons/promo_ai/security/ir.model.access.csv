@@ -1,0 +1,14 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_promo_ai_material_user,promo_ai.material user,model_promo_ai_material,base.group_user,1,0,0,0
+access_promo_ai_material_manager,promo_ai.material manager,model_promo_ai_material,base.group_system,1,1,1,1
+access_promo_ai_customer_user,promo_ai.customer user,model_promo_ai_customer,base.group_user,1,0,0,0
+access_promo_ai_customer_manager,promo_ai.customer manager,model_promo_ai_customer,base.group_system,1,1,1,1
+access_promo_ai_promotion_user,promo_ai.promotion user,model_promo_ai_promotion,base.group_user,1,0,0,0
+access_promo_ai_promotion_manager,promo_ai.promotion manager,model_promo_ai_promotion,base.group_system,1,1,1,1
+access_promo_ai_sale_user,promo_ai.sale user,model_promo_ai_sale,base.group_user,1,1,1,0
+access_promo_ai_sale_manager,promo_ai.sale manager,model_promo_ai_sale,base.group_system,1,1,1,1
+access_promo_ai_sale_line_user,promo_ai.sale.line user,model_promo_ai_sale_line,base.group_user,1,1,1,1
+access_promo_ai_sale_line_manager,promo_ai.sale.line manager,model_promo_ai_sale_line,base.group_system,1,1,1,1
+access_promo_ai_ticket_user,promo_ai.ticket user,model_promo_ai_ticket,base.group_user,1,1,1,0
+access_promo_ai_ticket_manager,promo_ai.ticket manager,model_promo_ai_ticket,base.group_system,1,1,1,1
+access_promo_ai_generate_invoice_wizard,promo_ai.generate.invoice.wizard,model_promo_ai_generate_invoice_wizard,base.group_user,1,1,1,1

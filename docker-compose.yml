@@ -1,0 +1,62 @@
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: odoo_db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - odoo_net
+
+  odoo:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: odoo_app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8069:8069"
+      - "8072:8072"   # longpolling
+    environment:
+      HOST: db
+      USER: odoo
+      PASSWORD: odoo
+    volumes:
+      - odoo_data:/var/lib/odoo
+      - ./addons:/mnt/extra-addons
+      - ./docker/odoo.conf:/etc/odoo/odoo.conf
+    networks:
+      - odoo_net
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: odoo_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - odoo_net
+
+volumes:
+  db_data:
+  odoo_data:
+
+networks:
+  odoo_net:
+    driver: bridge

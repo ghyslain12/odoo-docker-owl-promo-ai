@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="promo_ai_global_sidebar" inherit_id="web.layout" name="Promo AI Global Sidebar">
+        <xpath expr="//body" position="inside">
+            <!-- On n'affiche la sidebar QUE si on n'est PAS sur login ET PAS sur signup -->
+            <t t-set="is_login" t-value="request.httprequest.path == '/web/login'"/>
+            <t t-set="is_signup" t-value="request.httprequest.path == '/web/signup'"/>
+
+            <nav t-if="not is_login and not is_signup" class="promo-sidebar global-sidebar-active">
+                <div class="p-3">
+                    <a href="/web/session/logout" class="btn btn-primary w-100 py-2" style="background: #4a5eb8; font-size: 0.8rem; border: none;">Logout</a>
+                </div>
+                <div class="sidebar-links">
+                    <a href="/odoo/action-promo_ai.action_promo_ai_dashboard">Home</a>
+                    <div class="group-container">
+                        <div class="group-title">Provisioning</div>
+                        <a href="/odoo/action-promo_ai.action_promo_ai_sale" class="sub-link">sale</a>
+                    </div>
+                    <div class="group-container">
+                        <div class="group-title">Ticketing</div>
+                        <a href="/odoo/action-promo_ai.action_promo_ai_ticket" class="sub-link">ticket</a>
+                    </div>
+                    <div class="group-container">
+                        <div class="group-title">Users</div>
+                        <a href="/odoo/action-promo_ai.action_promo_ai_customer" class="sub-link">client</a>
+                    </div>
+                    <div class="group-container">
+                        <div class="group-title">Materials</div>
+                        <a href="/odoo/action-promo_ai.action_promo_ai_material" class="sub-link">material</a>
+                    </div>
+                    <a href="/odoo/action-promo_ai.action_promo_ai_promotion" class="mt-2">Promotions</a>
+                </div>
+            </nav>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_generate_invoice_wizard_form" model="ir.ui.view">
+        <field name="name">promo_ai.generate.invoice.wizard.form</field>
+        <field name="model">promo_ai.generate.invoice.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Invoice">
+                <group string="Invoice Options">
+                    <field name="sale_id" readonly="1"/>
+                    <field name="country"/>
+                </group>
+
+                <group string="Sale Summary" col="2">
+                    <field name="sale_name" readonly="1" string="Reference"/>
+                    <field name="sale_titre" readonly="1" string="Title"/>
+                    <field name="customer_name" readonly="1" string="Customer"/>
+                    <field name="total_discount" readonly="1" widget="monetary"
+                           options="{'currency_field': 'currency_id'}"
+                           decoration-success="total_discount > 0"/>
+                    <field name="total_amount" readonly="1" widget="monetary"
+                           options="{'currency_field': 'currency_id'}"/>
+                    <field name="currency_id" invisible="1"/>
+                </group>
+
+                <group string="Materials">
+                    <field name="line_ids" readonly="1" nolabel="1">
+                        <list>
+                            <field name="material_id"/>
+                            <field name="original_price" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="discount_percentage"/>
+                            <field name="final_price" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id" column_invisible="True"/>
+                        </list>
+                    </field>
+                </group>
+
+                <footer>
+                    <button name="action_generate"
+                            string="Generate &amp; Download PDF"
+                            type="object"
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_generate_invoice_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Invoice</field>
+        <field name="res_model">promo_ai.generate.invoice.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

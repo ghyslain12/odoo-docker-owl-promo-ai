@@ -1,0 +1,24 @@
+# docker-compose.override.yml — Development overrides
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.override.yml up
+#
+# Features:
+#   - Live reload of addons (no rebuild needed)
+#   - Debug log level
+#   - Dev tools port exposed
+
+services:
+  odoo:
+    command: >
+      odoo
+      --config=/etc/odoo/odoo.conf
+      --dev=all
+      --log-level=debug
+    volumes:
+      - ./addons:/mnt/extra-addons
+      - ./docker/odoo.conf:/etc/odoo/odoo.conf
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+    ports:
+      - "8069:8069"
+      - "8072:8072"
+      - "5678:5678"    # debugpy (Python remote debug)

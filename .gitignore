@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Odoo
+/filestore/
+/sessions/
+*.log
+*.pot
+*.mo
+
+# Docker volumes
+odoo_data/
+db_data/
+
+# Backups
+backups/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Tests
+.pytest_cache/
+test_output.log

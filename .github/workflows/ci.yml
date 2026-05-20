@@ -1,0 +1,244 @@
+name: Promo AI — CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  ODOO_VERSION: "19.0"
+  DB_NAME: "odoo_test"
+  DB_USER: "odoo"
+  DB_PASSWORD: "odoo"
+  MODULE: "promo_ai"
+
+jobs:
+  # ─────────────────────────────────────────────
+  # JOB 1 — Lint Python (flake8 + pylint-odoo)
+  # ─────────────────────────────────────────────
+  lint:
+    name: 🔍 Lint
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install lint tools
+        run: |
+          pip install flake8 pylint pylint-odoo
+
+      - name: flake8 — PEP8 style check
+        run: |
+          flake8 addons/promo_ai \
+            --max-line-length=120 \
+            --exclude=__pycache__,migrations \
+            --count --statistics
+
+      - name: pylint-odoo — Odoo-specific checks
+        run: |
+          pylint addons/promo_ai \
+            --load-plugins=pylint_odoo \
+            --rcfile=.pylintrc \
+            --disable=all \
+            --enable=odoolint \
+            -d W0611,C0103,C0114,C0115,C0116 \
+            || true   # non-blocking for now
+
+  # ─────────────────────────────────────────────
+  # JOB 2 — Unit & Integration Tests
+  # ─────────────────────────────────────────────
+  test:
+    name: 🧪 Tests Odoo
+    runs-on: ubuntu-22.04
+    needs: lint
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            libxml2-dev libxslt1-dev zlib1g-dev \
+            libsasl2-dev libldap2-dev libssl-dev \
+            libjpeg-dev libpng-dev libfreetype6-dev \
+            node-less wkhtmltopdf
+
+      - name: Clone Odoo ${{ env.ODOO_VERSION }}
+        run: |
+          git clone --depth=1 --branch=${{ env.ODOO_VERSION }} \
+            https://github.com/odoo/odoo.git /tmp/odoo
+
+      - name: Install Odoo Python dependencies
+        run: |
+          pip install -r /tmp/odoo/requirements.txt
+          pip install psycopg2-binary
+
+      - name: Create test database
+        env:
+          PGPASSWORD: odoo
+        run: |
+          psql -h localhost -U odoo -d postgres \
+            -c "CREATE DATABASE ${{ env.DB_NAME }} OWNER odoo;"
+
+      - name: Run Odoo tests
+        run: |
+          python /tmp/odoo/odoo-bin \
+            --addons-path=/tmp/odoo/addons,addons \
+            --db_host=localhost \
+            --db_port=5432 \
+            --db_user=odoo \
+            --db_password=odoo \
+            --test-enable \
+            --stop-after-init \
+            --log-level=test \
+            -d ${{ env.DB_NAME }} \
+            -i ${{ env.MODULE }} \
+            2>&1 | tee test_output.log
+
+      - name: Check for test failures
+        run: |
+          if grep -E "^(ERROR|CRITICAL)" test_output.log | grep -v "werkzeug"; then
+            echo "❌ Tests FAILED"
+            exit 1
+          fi
+          echo "✅ All tests passed"
+
+      - name: Upload test logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-logs
+          path: test_output.log
+          retention-days: 7
+
+  # ─────────────────────────────────────────────
+  # JOB 3 — Module structure validation
+  # ─────────────────────────────────────────────
+  validate:
+    name: ✅ Module Validation
+    runs-on: ubuntu-22.04
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Validate __manifest__.py
+        run: |
+          python -c "
+          import ast, sys, os
+          manifest_path = 'addons/promo_ai/__manifest__.py'
+          with open(manifest_path) as f:
+              content = f.read()
+          try:
+              data = ast.literal_eval(content)
+              required = ['name', 'version', 'depends', 'data']
+              for key in required:
+                  assert key in data, f'Missing key: {key}'
+              print('✅ __manifest__.py is valid')
+              print(f'   Module: {data[\"name\"]} v{data[\"version\"]}')
+          except Exception as e:
+              print(f'❌ Error: {e}')
+              sys.exit(1)
+          "
+
+      - name: Validate XML files
+        run: |
+          python -c "
+          import xml.etree.ElementTree as ET
+          import os, sys
+          errors = []
+          for root, dirs, files in os.walk('addons/promo_ai'):
+              for f in files:
+                  if f.endswith('.xml'):
+                      path = os.path.join(root, f)
+                      try:
+                          ET.parse(path)
+                      except ET.ParseError as e:
+                          errors.append(f'{path}: {e}')
+          if errors:
+              for e in errors:
+                  print(f'❌ {e}')
+              sys.exit(1)
+          print(f'✅ All XML files valid ({len([f for r,d,fs in os.walk(\"addons\") for f in fs if f.endswith(\".xml\")])} files)')
+          "
+
+      - name: Check Python syntax
+        run: |
+          python -m py_compile addons/promo_ai/models/*.py
+          python -m py_compile addons/promo_ai/wizards/*.py
+          python -m py_compile addons/promo_ai/tests/*.py
+          echo "✅ Python syntax OK"
+
+      - name: Validate security CSV
+        run: |
+          python -c "
+          import csv, sys
+          with open('addons/promo_ai/security/ir.model.access.csv') as f:
+              reader = csv.DictReader(f)
+              required = ['id','name','model_id:id','group_id:id',
+                          'perm_read','perm_write','perm_create','perm_unlink']
+              rows = list(reader)
+              assert reader.fieldnames[:len(required)] == required, 'Bad CSV header'
+              print(f'✅ Security CSV valid ({len(rows)} access rules)')
+          "
+
+  # ─────────────────────────────────────────────
+  # JOB 4 — Docker build check
+  # ─────────────────────────────────────────────
+  docker:
+    name: 🐳 Docker Build
+    runs-on: ubuntu-22.04
+    needs: [test, validate]
+    # Désactivé pour le moment.
+    # Pour réactiver, remplacez 'false' par : github.ref == 'refs/heads/main'
+    if: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: false
+          tags: promo-ai-odoo:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test docker-compose config
+        run: docker compose config --quiet && echo "✅ docker-compose.yml is valid"

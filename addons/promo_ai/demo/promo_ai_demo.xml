@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- Materials -->
+    <record id="demo_material_modem" model="promo_ai.material">
+        <field name="designation">Modem</field>
+        <field name="price">89.99</field>
+    </record>
+    <record id="demo_material_stb" model="promo_ai.material">
+        <field name="designation">STB</field>
+        <field name="price">149.50</field>
+    </record>
+    <record id="demo_material_voip" model="promo_ai.material">
+        <field name="designation">VoIP Phone</field>
+        <field name="price">75.00</field>
+    </record>
+    <record id="demo_material_hdmi" model="promo_ai.material">
+        <field name="designation">HDMI Cable 2m</field>
+        <field name="price">12.99</field>
+    </record>
+    <record id="demo_material_modem_fiber" model="promo_ai.material">
+        <field name="designation">Modem Fiber Ultra</field>
+        <field name="price">89.90</field>
+    </record>
+    <record id="demo_material_router_wifi" model="promo_ai.material">
+        <field name="designation">Router WiFi 6</field>
+        <field name="price">45.00</field>
+    </record>
+
+    <!-- Promotions -->
+    <record id="demo_promo_global" model="promo_ai.promotion">
+        <field name="name">Summer Sale -10%</field>
+        <field name="promo_type">percentage</field>
+        <field name="value">10.0</field>
+        <field name="target_type">all</field>
+        <field name="priority">0</field>
+        <field name="active">True</field>
+    </record>
+    <record id="demo_promo_modem" model="promo_ai.promotion">
+        <field name="name">Modem Special -15%</field>
+        <field name="promo_type">percentage</field>
+        <field name="value">15.0</field>
+        <field name="target_type">material</field>
+        <field name="material_id" ref="demo_material_modem"/>
+        <field name="priority">10</field>
+        <field name="active">True</field>
+    </record>
+    <record id="demo_promo_coupon" model="promo_ai.promotion">
+        <field name="name">Welcome coupon -20€</field>
+        <field name="code">WELCOME20</field>
+        <field name="promo_type">fixed_amount</field>
+        <field name="value">20.0</field>
+        <field name="target_type">coupon</field>
+        <field name="priority">5</field>
+        <field name="active">True</field>
+    </record>
+    <record id="demo_promo_general" model="promo_ai.promotion">
+        <field name="name">Remise générale -25%</field>
+        <field name="promo_type">percentage</field>
+        <field name="value">25.0</field>
+        <field name="target_type">all</field>
+        <field name="priority">10</field>
+        <field name="active">True</field>
+    </record>
+    <record id="demo_promo_bienvenue" model="promo_ai.promotion">
+        <field name="name">Coupon bienvenue -20%</field>
+        <field name="code">BIENVENUE20</field>
+        <field name="promo_type">percentage</field>
+        <field name="value">20.0</field>
+        <field name="target_type">coupon</field>
+        <field name="priority">5</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Customers -->
+    <record id="demo_customer_1" model="promo_ai.customer">
+        <field name="surnom">ncorkery</field>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+    <record id="demo_customer_gigi" model="promo_ai.customer">
+        <field name="surnom">Gigi Laporte</field>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+
+    <!-- Sales -->
+    <record id="demo_sale_1" model="promo_ai.sale">
+        <field name="titre">Installation Fibre Paris</field>
+        <field name="description">Installation fibre optique chez le client.</field>
+        <field name="customer_id" ref="demo_customer_gigi"/>
+    </record>
+    <record id="demo_sale_line_1" model="promo_ai.sale.line">
+        <field name="sale_id" ref="demo_sale_1"/>
+        <field name="material_id" ref="demo_material_modem_fiber"/>
+        <field name="original_price">89.90</field>
+        <field name="final_price">89.90</field>
+    </record>
+    <record id="demo_sale_line_2" model="promo_ai.sale.line">
+        <field name="sale_id" ref="demo_sale_1"/>
+        <field name="material_id" ref="demo_material_router_wifi"/>
+        <field name="original_price">45.00</field>
+        <field name="final_price">45.00</field>
+    </record>
+
+    <!-- Tickets -->
+    <record id="demo_ticket_1" model="promo_ai.ticket">
+        <field name="titre">Problème synchronisation</field>
+        <field name="description">Le client n'arrive pas à configurer le WiFi.</field>
+        <field name="sale_id" ref="demo_sale_1"/>
+        <field name="state">in_progress</field>
+        <field name="priority">2</field>
+    </record>
+    <record id="demo_ticket_2" model="promo_ai.ticket">
+        <field name="titre">Ticket 2 — connexion intermittente</field>
+        <field name="description">Coupures toutes les 2 heures.</field>
+        <field name="sale_id" ref="demo_sale_1"/>
+        <field name="state">new</field>
+    </record>
+
+</data>
+</odoo>
