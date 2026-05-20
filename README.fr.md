@@ -273,14 +273,14 @@ Ajouter `workers = 0` dans `docker/odoo.conf` pour passer en mode single-thread 
 ![Vue Tickets](ressources/tickets.png)
 *Liste des tickets avec sidebar sombre*
 
-![Vue Matériels](ressources/materials.png)
-*CRUD Matériels*
+![Vue Dashboard](ressources/dashboard.png)
+*Dashboard*
 
 ![Détail Vente](ressources/sale.png)
 *Formulaire vente avec lignes matériels, remises et compteur tickets*
 
 ![Facture PDF](ressources/bill_pdf.png)
-*Facture PDF générée — localisation France*
+*Facture PDF générée*
 
 ![Page de login](ressources/login.png)
 *Page de login custom reproduisant le design Angular*
